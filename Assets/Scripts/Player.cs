@@ -21,9 +21,13 @@ public class Player : MonoBehaviour
     public LayerMask groundMask;
     public Transform orientation;
     public GameObject lookDirectionVisualizer;
+    public GameObject cameraPivot;
     
     private Rigidbody rb;
     private ResolutionManager rm;
+
+    private Quaternion targetRot;
+    private float camRotSpeed = 10.0f;
     
     void Start()
     {
@@ -34,6 +38,8 @@ public class Player : MonoBehaviour
         
         // Sets orientation to the camera view. Camera view Up is forward.
         orientation.transform.Rotate(Vector3.up, -45.0f);
+
+        targetRot = cameraPivot.transform.rotation;
     }
 
     void FixedUpdate()
@@ -49,10 +55,21 @@ public class Player : MonoBehaviour
         {
             flashlight.SetActive(!flashlight.activeSelf);
         }
+
+        // Rotate Camera
+        if (Input.GetKeyDown(KeyCode.E)) RotateCamera(Quaternion.Euler(0,  90f, 0)); // Right
+        if (Input.GetKeyDown(KeyCode.Q)) RotateCamera(Quaternion.Euler(0, -90f, 0)); // Left
         
         Movement();
+        
+        cameraPivot.transform.rotation = Quaternion.Lerp(cameraPivot.transform.rotation, targetRot, Time.deltaTime * camRotSpeed);
     }
-    
+
+    void RotateCamera(Quaternion rot)
+    {
+        targetRot *= rot;
+    }
+
     void Movement()
     {
         // Mouse Pos * Resolution Scale to get accurate position
@@ -70,7 +87,7 @@ public class Player : MonoBehaviour
             lookDirectionVisualizer.transform.position = hitInfo.point;
             playerModel.transform.forward = dir;
         }
-
+        
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
     }
