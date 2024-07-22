@@ -28,6 +28,9 @@ public class Player : MonoBehaviour
 
     private Quaternion targetRot;
     private float camRotSpeed = 10.0f;
+
+    private bool playerBusy = false;
+    private bool flashlightStateBeforeAction = false;
     
     void Start()
     {
@@ -50,6 +53,8 @@ public class Player : MonoBehaviour
     
     void Update()
     {
+        if (playerBusy) return;
+        
         // Temp flashlight testing
         if (Input.GetKeyDown(KeyCode.F))
         {
@@ -72,13 +77,8 @@ public class Player : MonoBehaviour
 
     void Movement()
     {
-        // Mouse Pos * Resolution Scale to get accurate position
-        mousePos = Input.mousePosition;
-        mousePos.x *= rm.resScaleX;
-        mousePos.y *= rm.resScaleY;
-        
         // Look Dir
-        Ray ray = rm.mainCamera.ScreenPointToRay(mousePos);
+        Ray ray = rm.mainCamera.ScreenPointToRay(rm.GetMousePosition());
         if (Physics.Raycast(ray, out var hitInfo, Mathf.Infinity, groundMask))
         {
             Vector3 dir = hitInfo.point - transform.position;
@@ -91,4 +91,24 @@ public class Player : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
     }
+
+    /// <summary>
+    /// Used when an action is made by the player where the player shouldn't be able to move / look around, interact, etc.
+    /// </summary>
+    public void StartAction()
+    {
+        playerBusy = true;
+        flashlightStateBeforeAction = flashlight.activeSelf;
+        flashlight.SetActive(false);
+    }
+
+    /// <summary>
+    /// Used when an action the player was doing is over. Allowing the player to move / look around again.
+    /// </summary>
+    public void EndAction()
+    {
+        playerBusy = false;
+        flashlight.SetActive(flashlightStateBeforeAction);
+    }
+
 }

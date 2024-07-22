@@ -49,4 +49,13 @@ public class ResolutionManager : MonoBehaviour
         camWorldBoundry = new Vector2(mainCamera.orthographicSize * 2 * currentScreenWidth / currentScreenHeight, mainCamera.orthographicSize * 2);
         pixelSize = camWorldBoundry.x / renderTex.width;
     }
+
+    /// <summary>
+    /// Returns mouse position on screen converted to the lowered resolution render texture.
+    /// </summary>
+    /// <returns>Render Texture Cursor Position</returns>
+    public Vector3 GetMousePosition()
+    {
+        return Vector3.Scale(Input.mousePosition, new Vector3(resScaleX, resScaleY, 0));
+    }
 }

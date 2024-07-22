@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Placed on the camera, this class is responsible for making sure the player is always visible on screen.
+/// Once a wall goes over the player, a cutout is shown on the player by setting the variables used in the PlayerCutout shader. 
+/// </summary>
 public class PlayerCutout : MonoBehaviour
 {
     [SerializeField] private Transform targetObject;
