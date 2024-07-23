@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 
 /// <summary>
@@ -17,7 +18,6 @@ public class Player : MonoBehaviour
     private float verticalInput;
 
     [Header("Look Direction")]
-    public Vector3 mousePos;
     public LayerMask groundMask;
     public Transform orientation;
     public GameObject lookDirectionVisualizer;
@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
     private Quaternion targetRot;
     private float camRotSpeed = 10.0f;
 
-    private bool playerBusy = false;
+    public bool isBusy = false;
     private bool flashlightStateBeforeAction = false;
     
     void Start()
@@ -39,9 +39,6 @@ public class Player : MonoBehaviour
         rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
         rb = GetComponent<Rigidbody>();
         
-        // Sets orientation to the camera view. Camera view Up is forward.
-        orientation.transform.Rotate(Vector3.up, -45.0f);
-
         targetRot = cameraPivot.transform.rotation;
     }
 
@@ -53,20 +50,20 @@ public class Player : MonoBehaviour
     
     void Update()
     {
-        if (playerBusy) return;
+        if (isBusy) return;
         
         // Temp flashlight testing
         if (Input.GetKeyDown(KeyCode.F))
         {
             flashlight.SetActive(!flashlight.activeSelf);
         }
-
+        
         // Rotate Camera
         if (Input.GetKeyDown(KeyCode.E)) RotateCamera(Quaternion.Euler(0,  90f, 0)); // Right
         if (Input.GetKeyDown(KeyCode.Q)) RotateCamera(Quaternion.Euler(0, -90f, 0)); // Left
         
         Movement();
-        
+
         cameraPivot.transform.rotation = Quaternion.Lerp(cameraPivot.transform.rotation, targetRot, Time.deltaTime * camRotSpeed);
     }
 
@@ -97,7 +94,7 @@ public class Player : MonoBehaviour
     /// </summary>
     public void StartAction()
     {
-        playerBusy = true;
+        isBusy = true;
         flashlightStateBeforeAction = flashlight.activeSelf;
         flashlight.SetActive(false);
     }
@@ -107,7 +104,7 @@ public class Player : MonoBehaviour
     /// </summary>
     public void EndAction()
     {
-        playerBusy = false;
+        isBusy = false;
         flashlight.SetActive(flashlightStateBeforeAction);
     }
 
