@@ -9,6 +9,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public GameObject playerModel;
+    public PlayerInventory inventory;
     public GameObject flashlight;
 
     [Header("Movement")]
@@ -38,6 +39,7 @@ public class Player : MonoBehaviour
 
         rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
         rb = GetComponent<Rigidbody>();
+        inventory = GetComponent<PlayerInventory>();
         
         targetRot = cameraPivot.transform.rotation;
     }

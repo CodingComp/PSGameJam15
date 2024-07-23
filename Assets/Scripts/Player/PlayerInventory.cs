@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Cinemachine;
 using UnityEngine;
 
@@ -106,7 +107,7 @@ public class PlayerInventory : MonoBehaviour
         print("Player Inventory \n =================");
         
         foreach (KeyValuePair<ItemData, int> item in items)
-            print(item.Key.itemName + " : " + item.Value);
+            print(item.Key.itemName + " : " + item.Value + "\n-----------------\n");
         
         print("=================");
     }
