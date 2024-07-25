@@ -5,9 +5,16 @@ using UnityEngine;
 
 public interface IInteractable
 {
+    void Awake()
+    {
+        MonoBehaviour.print("Test");
+    }
+
     void Interact();
     void MouseEnter();
     void MouseExit();
+    void MouseDown();
+    void MouseReleased();
 }
 
 /// <summary>
@@ -17,10 +24,13 @@ public interface IInteractable
 public class Interact : MonoBehaviour
 {
     public LayerMask interactLayer;
+    public LayerMask craftItemLayer;
     public ResolutionManager rm;
 
     private Dictionary<GameObject, IInteractable> interactables;
-    private GameObject hoveredInteractable; 
+    private GameObject hoveredInteractable;
+
+    private bool craftingMode = false;
     
     void Start()
     {
@@ -29,6 +39,15 @@ public class Interact : MonoBehaviour
         interactables = new Dictionary<GameObject, IInteractable>();
         
         IEnumerable<IInteractable> interactableObjects = FindObjectsOfType<MonoBehaviour>().OfType<IInteractable>();
+
+        EventManager.E_Item.itemDestroyed += (item) =>
+        {
+            if (hoveredInteractable.gameObject == item) hoveredInteractable = null;
+            interactables.Remove(item);
+        };
+
+        EventManager.E_Crafting.modeChanged += (mode) => craftingMode = mode;
+
         foreach (IInteractable interactable in interactableObjects)
         {
             interactables.Add(((MonoBehaviour)interactable).gameObject, interactable);
@@ -37,18 +56,28 @@ public class Interact : MonoBehaviour
 
     void Update()
     {
+        // Checks if the cursor is hovering over an interactable object
         Ray ray = rm.mainCamera.ScreenPointToRay(rm.GetMousePosition());
-        if (Physics.Raycast(ray, out var hitInfo, Mathf.Infinity, interactLayer))
+        if (Physics.Raycast(ray, out var hitInfo, Mathf.Infinity, craftingMode ? craftItemLayer : interactLayer))
         {
-            
             if (hoveredInteractable is null) // Mouse Enter
             {
                 hoveredInteractable = hitInfo.transform.gameObject;
                 interactables[hoveredInteractable].MouseEnter();
             }
 
+            if (hoveredInteractable != hitInfo.transform.gameObject) // Different item hovered
+            {
+                interactables[hoveredInteractable].MouseExit();
+                hoveredInteractable = hitInfo.transform.gameObject;
+            }
+            
             // Interact - Mouse Click
             if (Input.GetKeyDown(KeyCode.Mouse0)) interactables[hitInfo.transform.gameObject].Interact();
+            // Mouse Held
+            else if (Input.GetKey(KeyCode.Mouse0)) interactables[hitInfo.transform.gameObject].MouseDown();
+            // Mouse Released
+            if (Input.GetKeyUp(KeyCode.Mouse0)) interactables[hitInfo.transform.gameObject].MouseReleased();
         }
         else if (hoveredInteractable is not null) // Mouse Exit
         {

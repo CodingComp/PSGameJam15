@@ -20,6 +20,7 @@ public class Crafting : MonoBehaviour, IInteractable
 {
     [SerializeField] private Player player;
     [SerializeField] private Light hoverOverLight;
+    [SerializeField] private LayerMask displayedItemLayer;
     
     [Header("Camera Properties")]
     [SerializeField] private Camera mainCam;
@@ -67,10 +68,13 @@ public class Crafting : MonoBehaviour, IInteractable
             // For each amount of current item. Spawn said item
             for (int locationIndex = 0; locationIndex < itemCount; locationIndex++)
             {
-                Instantiate(itemData.mesh, itemLocations.itemLocations[locationIndex]);
+                GameObject displayedItem = Instantiate(itemData.mesh, itemLocations.itemLocations[locationIndex]);
+                displayedItem.AddComponent<DisplayedItem>();
+                //displayedItem.layer = displayedItemLayer;
             }
         }
 
+        EventManager.E_Crafting.modeChanged(true);
         StartCoroutine(displayItems());
     }
 
@@ -81,7 +85,7 @@ public class Crafting : MonoBehaviour, IInteractable
         
         player.EndAction();
         inCraftingMode = false;
-
+        
         StartCoroutine(removeItems());
         
         if (cursorHovered) hoverOverLight.intensity = 5.0f;
@@ -136,6 +140,8 @@ public class Crafting : MonoBehaviour, IInteractable
                 Destroy(location.GetChild(0).gameObject);
             }
         }
+        
+        EventManager.E_Crafting.modeChanged(false);
         playerItemsDisplay.SetActive(false);
     }
 
@@ -144,6 +150,7 @@ public class Crafting : MonoBehaviour, IInteractable
      */
     public void Interact()
     {
+        if (inCraftingMode) return;
         EnterCraftingMode();
         hoverOverLight.intensity = 0.0f;
     }
@@ -160,5 +167,15 @@ public class Crafting : MonoBehaviour, IInteractable
     {
         cursorHovered = false;
         hoverOverLight.intensity = 0.0f;
+    }
+
+    public void MouseDown()
+    {
+        print("Down");
+    }
+
+    public void MouseReleased()
+    {
+        print("Released");
     }
 }

@@ -38,6 +38,7 @@ public class Item : MonoBehaviour, IInteractable
     /// </summary>
     public void ItemAdded()
     {
+        EventManager.E_Item.itemDestroyed.Invoke(gameObject);
         lights = new List<Light>();
         Destroy(gameObject);
     }
@@ -53,14 +54,23 @@ public class Item : MonoBehaviour, IInteractable
         }
         Invoke("UpdateLights", 0.5f);
     }
+    
+    private void UpdateLights()
+    {
+        foreach (Light l in lights)
+        {
+            l.color = currentLightColor;
+            l.intensity = currentIntensity;
+        }
+    }
 
     /*
-     * IInteractable Methods
+     * Interact Interface
      */
     
     public void Interact()
     {
-        EventManager.Player.itemPickedUp.Invoke(this, itemData);
+        EventManager.E_Player.itemPickedUp.Invoke(this, itemData);
     }
 
     public void MouseEnter()
@@ -79,12 +89,13 @@ public class Item : MonoBehaviour, IInteractable
         UpdateLights();
     }
 
-    private void UpdateLights()
+    public void MouseDown()
     {
-        foreach (Light l in lights)
-        {
-            l.color = currentLightColor;
-            l.intensity = currentIntensity;
-        }
+        
+    }
+
+    public void MouseReleased()
+    {
+        
     }
 }

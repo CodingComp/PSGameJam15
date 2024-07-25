@@ -21,12 +21,12 @@ public class PlayerInventory : MonoBehaviour
     
     private void OnEnable()
     {
-        EventManager.Player.itemPickedUp += AddItem;
+        EventManager.E_Player.itemPickedUp += AddItem;
     }
 
     private void OnDisable()
     {
-        EventManager.Player.itemPickedUp -= AddItem;
+        EventManager.E_Player.itemPickedUp -= AddItem;
     }
     
     private void Start()

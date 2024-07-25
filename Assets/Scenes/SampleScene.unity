@@ -4011,6 +4011,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 3761937010964820937, guid: 95d94a64079434342b3aa539da492215,
+        type: 3}
+      propertyPath: craftItemLayer.m_Bits
+      value: 1024
+      objectReference: {fileID: 0}
     - target: {fileID: 8048764222158987475, guid: 95d94a64079434342b3aa539da492215,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4089,6 +4094,11 @@ PrefabInstance:
       propertyPath: playerCamCM
       value: 
       objectReference: {fileID: 1068720313}
+    - target: {fileID: 3337253759599050377, guid: 6d494ad4fcdd77d499fda693fd3b3b3f,
+        type: 3}
+      propertyPath: displayedItemLayer.m_Bits
+      value: 1024
+      objectReference: {fileID: 0}
     - target: {fileID: 3845397168060777930, guid: 6d494ad4fcdd77d499fda693fd3b3b3f,
         type: 3}
       propertyPath: m_Name

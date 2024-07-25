@@ -24,7 +24,7 @@ public class ResolutionManager : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
-        
+        print(mainCamera.pixelWidth + " " + mainCamera.pixelHeight);   
         UpdateResolutionVariables();
     }
     

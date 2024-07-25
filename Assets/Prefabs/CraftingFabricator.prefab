@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 585288551159205666}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: OnScreenPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1421742532232720993}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: OffScreenPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,7 +74,7 @@ GameObject:
   - component: {fileID: 6250221822087627036}
   - component: {fileID: 6488429240880564920}
   - component: {fileID: 5444556940935397052}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -535,7 +535,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4460021017336259030}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: L1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -567,7 +567,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4096504336790260507}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: L2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -718,7 +718,7 @@ GameObject:
   - component: {fileID: 1968052987164785278}
   - component: {fileID: 3116260230755607861}
   - component: {fileID: 3826013736296902255}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: HoverOverLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -939,7 +939,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7897480099542227967}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Lights
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -973,7 +973,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5121750698818922188}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: TestItems
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1198,7 +1198,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4287759994802335205}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: L3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1334,7 +1334,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7136215175157558396}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: CraftingArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1367,7 +1367,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6399611826797366480}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: TmpModel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
