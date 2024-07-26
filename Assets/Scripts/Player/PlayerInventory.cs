@@ -10,6 +10,7 @@ public class PlayerInventory : MonoBehaviour
     private Player _player;
     private bool inInventory = false;
 
+    [SerializeField] private GameObject inventoryUI;
     [SerializeField] private GameObject inventoryObject;
     
     [Header("Cameras")]
@@ -17,7 +18,7 @@ public class PlayerInventory : MonoBehaviour
     public CinemachineVirtualCamera inventoryCamera;
 
     // Items held by the player.
-    public Dictionary<ItemData, int> items;
+    public Dictionary<ItemData, int> items = new Dictionary<ItemData, int>();
     
     private void OnEnable()
     {
@@ -29,7 +30,7 @@ public class PlayerInventory : MonoBehaviour
         EventManager.E_Player.itemPickedUp -= AddItem;
     }
     
-    private void Start()
+    private void Awake()
     {
         _player = GetComponent<Player>();
         items = new Dictionary<ItemData, int>();
@@ -44,7 +45,7 @@ public class PlayerInventory : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F2)) DebugPrintInventory();
+        if (Input.GetKeyDown(KeyCode.Alpha3)) DebugPrintInventory();
         
         if (!(Input.GetKeyDown(KeyCode.Tab) && (!_player.isBusy || inInventory))) return;
         
@@ -52,6 +53,7 @@ public class PlayerInventory : MonoBehaviour
         {
             inInventory = true;
             inventoryObject.SetActive(true);
+            inventoryUI.SetActive(true);
             
             inventoryCamera.Priority = 10;
             playerCamera.Priority = 1;
@@ -66,6 +68,7 @@ public class PlayerInventory : MonoBehaviour
             inventoryCamera.Priority = 1;
             
             inventoryObject.SetActive(false);
+            inventoryUI.SetActive(false);
             _player.EndAction();
         }
     }

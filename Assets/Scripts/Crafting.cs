@@ -63,14 +63,16 @@ public class Crafting : MonoBehaviour, IInteractable
                 recipes.Add(gameItems[i]);
             }
         }
+        print("1");
+
     }
 
     private void Update()
     {
         if (!inCraftingMode) return;
 
-        if (Input.GetKeyDown(KeyCode.F1)) LeaveCraftingMode();
-        if (Input.GetKeyDown(KeyCode.F3)) Craft();
+        if (Input.GetKeyDown(KeyCode.Alpha1)) LeaveCraftingMode();
+        if (Input.GetKeyDown(KeyCode.Alpha2)) Craft();
     }
     
     void EnterCraftingMode()
@@ -144,8 +146,12 @@ public class Crafting : MonoBehaviour, IInteractable
             if (IsRecipe(recipes[i].craftRecipe))
             {
                 // Makes sure item can be added to inventory
-                if (recipes[i].maxStackSize == player.inventory.items[recipes[i]]) CraftFailed();
-                
+                if (recipes[i].maxStackSize == player.inventory.items[recipes[i]])
+                {
+                    CraftFailed();
+                    return;
+                }
+
                 CraftSucceeded(recipes[i]);
                 return;
             }

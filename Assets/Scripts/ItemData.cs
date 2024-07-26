@@ -18,7 +18,7 @@ public class ItemData : ScriptableObject
 {
     public string itemName;
     
-    public Image icon;
+    public Sprite icon;
     
     public GameObject mesh;
     
