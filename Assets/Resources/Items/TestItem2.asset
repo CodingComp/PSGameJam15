@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5a7000f90f3172949a365d45279125d2, type: 3}
-  m_Name: TestItem
+  m_Name: TestItem2
   m_EditorClassIdentifier: 
-  itemName: TestItem
+  itemName: TestItem2
   icon: {fileID: 0}
-  mesh: {fileID: 4710301179675281701, guid: 440dcae4a95a6ab4580d40fd5fed2214, type: 3}
-  maxStackSize: 3
-  canBeCrafted: 0
+  mesh: {fileID: 4710301179675281701, guid: 95f207451b2ea384385da14072fae539, type: 3}
+  maxStackSize: 2
+  canBeCrafted: 1
   craftRecipe:
-    item1: {fileID: 0}
-    item2: {fileID: 0}
-    item3: {fileID: 0}
+    item1: {fileID: 11400000, guid: a50862aed018d984b9a4cd82009da62d, type: 2}
+    item2: {fileID: 11400000, guid: a50862aed018d984b9a4cd82009da62d, type: 2}
+    item3: {fileID: 11400000, guid: a50862aed018d984b9a4cd82009da62d, type: 2}

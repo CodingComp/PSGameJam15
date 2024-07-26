@@ -5,11 +5,6 @@ using UnityEngine;
 
 public interface IInteractable
 {
-    void Awake()
-    {
-        MonoBehaviour.print("Test");
-    }
-
     void Interact();
     void MouseEnter();
     void MouseExit();
@@ -37,21 +32,25 @@ public class Interact : MonoBehaviour
         rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
 
         interactables = new Dictionary<GameObject, IInteractable>();
-        
+        // Gets all interactable objects already placed in the world 
         IEnumerable<IInteractable> interactableObjects = FindObjectsOfType<MonoBehaviour>().OfType<IInteractable>();
-
-        EventManager.E_Item.itemDestroyed += (item) =>
-        {
-            if (hoveredInteractable.gameObject == item) hoveredInteractable = null;
-            interactables.Remove(item);
-        };
-
-        EventManager.E_Crafting.modeChanged += (mode) => craftingMode = mode;
-
         foreach (IInteractable interactable in interactableObjects)
         {
             interactables.Add(((MonoBehaviour)interactable).gameObject, interactable);
         }
+        
+        // Events
+        EventManager.E_Item.itemCreated += (item) =>
+        {
+            interactables.Add(item, item.GetComponent<IInteractable>());
+        };
+        EventManager.E_Item.itemDestroyed += (item) =>
+        {
+            if (hoveredInteractable is not null && hoveredInteractable.gameObject == item) 
+                hoveredInteractable = null;
+            interactables.Remove(item);
+        };
+        EventManager.E_Crafting.modeChanged += (mode) => craftingMode = mode;
     }
 
     void Update()

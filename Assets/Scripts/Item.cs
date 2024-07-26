@@ -23,6 +23,8 @@ public class Item : MonoBehaviour, IInteractable
         GameObject item = Instantiate(itemData.mesh, transform);
         item.transform.localPosition = new Vector3();
 
+        item.AddComponent<BoxCollider>();
+        
         baseColor = lights[0].color;
         baseIntensity = lights[0].intensity;
         currentLightColor = baseColor;

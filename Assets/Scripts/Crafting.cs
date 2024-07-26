@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -14,14 +15,13 @@ public class ItemLocations
     /// Item Locations to be displayed in the crafting fabricator view.
     /// </summary>
     public List<Transform> itemLocations;
-} 
+}
 
 public class Crafting : MonoBehaviour, IInteractable
 {
     [SerializeField] private Player player;
     [SerializeField] private Light hoverOverLight;
-    [SerializeField] private LayerMask displayedItemLayer;
-    
+
     [Header("Camera Properties")]
     [SerializeField] private Camera mainCam;
     [SerializeField] private CinemachineVirtualCamera playerCamCM;
@@ -40,16 +40,37 @@ public class Crafting : MonoBehaviour, IInteractable
 
     private bool inCraftingMode;
     private bool cursorHovered;
+
+    // Current items in the crafting fabricator
+    private List<ItemData> craftingItems;
+    public LayerMask craftingItemInsertLayer;
+
+    // List of all items that can be crafted / all recipes.
+    public List<ItemData> recipes;
     
     private void Start()
     {
         hoverOverLight.intensity = 0.0f;
         targetPos = offScreenPosition.position;
+        craftingItems = new List<ItemData>();
+        
+        // Loads each item from the game, checks if said item can be crafted and adds it to the recipes list.
+        ItemData[] gameItems = Resources.LoadAll<ItemData>("Items/");
+        for (int i = 0; i < gameItems.Length; i++)
+        {
+            if (gameItems[i].canBeCrafted)
+            {
+                recipes.Add(gameItems[i]);
+            }
+        }
     }
 
     private void Update()
     {
-        if (inCraftingMode && Input.GetKeyDown(KeyCode.F1)) LeaveCraftingMode();
+        if (!inCraftingMode) return;
+
+        if (Input.GetKeyDown(KeyCode.F1)) LeaveCraftingMode();
+        if (Input.GetKeyDown(KeyCode.F3)) Craft();
     }
     
     void EnterCraftingMode()
@@ -60,19 +81,7 @@ public class Crafting : MonoBehaviour, IInteractable
         player.StartAction();
         inCraftingMode = true;
 
-        foreach (ItemLocations itemLocations in craftingItemsLocations)
-        {
-            int itemCount = player.inventory.items[itemLocations.itemData];
-            ItemData itemData = itemLocations.itemData;
-            
-            // For each amount of current item. Spawn said item
-            for (int locationIndex = 0; locationIndex < itemCount; locationIndex++)
-            {
-                GameObject displayedItem = Instantiate(itemData.mesh, itemLocations.itemLocations[locationIndex]);
-                displayedItem.AddComponent<DisplayedItem>();
-                //displayedItem.layer = displayedItemLayer;
-            }
-        }
+        updateDisplayItems();
 
         EventManager.E_Crafting.modeChanged(true);
         StartCoroutine(displayItems());
@@ -86,11 +95,105 @@ public class Crafting : MonoBehaviour, IInteractable
         player.EndAction();
         inCraftingMode = false;
         
-        StartCoroutine(removeItems());
+        StartCoroutine(removeDisplayItems());
         
         if (cursorHovered) hoverOverLight.intensity = 5.0f;
     }
 
+    void CreateDisplayItem(ItemData itemData, ItemLocations itemLocations, int locationIndex)
+    {
+        GameObject displayedItem = Instantiate(itemData.mesh, itemLocations.itemLocations[locationIndex]);
+        DisplayedItem dItem = displayedItem.AddComponent<DisplayedItem>();
+        dItem.crafting = this;
+        dItem.itemData = itemData;
+    }
+    
+    private void updateDisplayItems()
+    {
+        // Creates ItemDisplay objects to be displayed
+        foreach (ItemLocations itemLocations in craftingItemsLocations)
+        {
+            int itemCount = player.inventory.items[itemLocations.itemData];
+            ItemData itemData = itemLocations.itemData;
+            
+            // For each amount of current item. Spawn said item
+            for (int locationIndex = 0; locationIndex < itemCount; locationIndex++)
+            {
+                if (itemLocations.itemLocations[locationIndex].childCount == 0)
+                    CreateDisplayItem(itemData, itemLocations, locationIndex);
+            }
+        }
+    }
+    
+    public bool AddCraftingItem(ItemData craftingItemData)
+    {
+        if (craftingItems.Count == 3) return false;
+        
+        craftingItems.Add(craftingItemData);
+        player.inventory.RemoveItem(craftingItemData);
+        return true;
+    }
+
+    void Craft()
+    {
+        if (craftingItems.Count != 3) CraftFailed();
+
+        // Checks Recipes
+        for (int i = 0; i < recipes.Count; i++)
+        {
+            if (IsRecipe(recipes[i].craftRecipe))
+            {
+                // Makes sure item can be added to inventory
+                if (recipes[i].maxStackSize == player.inventory.items[recipes[i]]) CraftFailed();
+                
+                CraftSucceeded(recipes[i]);
+                return;
+            }
+        }
+        
+        CraftFailed();
+    }
+    
+    void CraftSucceeded(ItemData itemCrafted)
+    {
+        // Adds crafted item to player inventory
+        player.inventory.items[itemCrafted]++;
+        
+        craftingItems = new List<ItemData>();
+        updateDisplayItems();
+    }
+
+    void CraftFailed()
+    {
+        // Adds inserted items back to player inventory
+        for (int i = 0; i < craftingItems.Count; i++)
+        {
+            player.inventory.items[craftingItems[i]]++;    
+        }
+        
+        craftingItems = new List<ItemData>();
+        updateDisplayItems();
+    }
+
+    bool IsRecipe(Recipe itemRecipe)
+    {
+        List<ItemData> itemChecklist = new List<ItemData>() { itemRecipe.item1, itemRecipe.item2, itemRecipe.item3 };
+
+        for (int i = 0; i < craftingItems.Count; i++)       // Inserted Items
+        {
+            for (int j = 0; j < itemChecklist.Count; j++)   // Recipe Items
+            {
+                if (craftingItems[i] == itemChecklist[j])
+                {
+                    itemChecklist.Remove(itemChecklist[j]);
+                    break;
+                }
+            }
+        }
+
+        return itemChecklist.Count == 0;
+    }
+    
     /*
      * Coroutines
      */
@@ -114,11 +217,11 @@ public class Crafting : MonoBehaviour, IInteractable
             yield return null;
         }
     }
-    
+
     /// <summary>
     /// Smoothly removes the player crafting items from view once the player exits the crafting fabricator.
     /// </summary>
-    private IEnumerator removeItems()
+    private IEnumerator removeDisplayItems()
     {
         targetPos = offScreenPosition.position;
 
@@ -137,6 +240,7 @@ public class Crafting : MonoBehaviour, IInteractable
             foreach (Transform location in itemLocations.itemLocations)
             {
                 if (location.childCount == 0) continue;
+                EventManager.E_Item.itemDestroyed.Invoke(location.GetChild(0).gameObject);
                 Destroy(location.GetChild(0).gameObject);
             }
         }
@@ -148,6 +252,7 @@ public class Crafting : MonoBehaviour, IInteractable
     /*
      * Interact Interface
      */
+    
     public void Interact()
     {
         if (inCraftingMode) return;
@@ -171,11 +276,11 @@ public class Crafting : MonoBehaviour, IInteractable
 
     public void MouseDown()
     {
-        print("Down");
+        
     }
 
     public void MouseReleased()
     {
-        print("Released");
+        
     }
 }

@@ -24,7 +24,6 @@ public class ResolutionManager : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
-        print(mainCamera.pixelWidth + " " + mainCamera.pixelHeight);   
         UpdateResolutionVariables();
     }
     
@@ -54,8 +53,9 @@ public class ResolutionManager : MonoBehaviour
     /// Returns mouse position on screen converted to the lowered resolution render texture.
     /// </summary>
     /// <returns>Render Texture Cursor Position</returns>
-    public Vector3 GetMousePosition()
+    public Vector3 GetMousePosition(float z = 0)
     {
-        return Vector3.Scale(Input.mousePosition, new Vector3(resScaleX, resScaleY, 0));
+        Vector3 cursorPos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, z);
+        return Vector3.Scale(cursorPos, new Vector3(resScaleX, resScaleY, 1));
     }
 }

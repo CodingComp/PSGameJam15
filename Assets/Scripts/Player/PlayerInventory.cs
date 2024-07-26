@@ -77,7 +77,7 @@ public class PlayerInventory : MonoBehaviour
     /// </summary>
     /// <param name="item">New Item's Object</param>
     /// <param name="itemData">New Item's ItemData</param>
-    void AddItem(Item item, ItemData itemData)
+    public void AddItem(Item item, ItemData itemData)
     {
         if (items[itemData] < itemData.maxStackSize)
         {
@@ -94,7 +94,7 @@ public class PlayerInventory : MonoBehaviour
     /// Removes item from the player's inventory.
     /// </summary>
     /// <param name="removedItem">Item to remove</param>
-    void RemoveItem(ItemData removedItem)
+    public void RemoveItem(ItemData removedItem)
     {
         items[removedItem]--;
     }

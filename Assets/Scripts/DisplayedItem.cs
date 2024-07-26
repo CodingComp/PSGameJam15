@@ -5,11 +5,15 @@ using UnityEngine;
 
 public class DisplayedItem : MonoBehaviour, IInteractable
 {
+    public Crafting crafting;
+    public ItemData itemData;
     private ResolutionManager rm;
-
+    private float zDist;
+    
     private void Start()
     {
-        rm = GetComponent<ResolutionManager>();
+        rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
+        EventManager.E_Item.itemCreated.Invoke(gameObject);
     }
 
     /*
@@ -18,27 +22,36 @@ public class DisplayedItem : MonoBehaviour, IInteractable
     
     public void Interact()
     {
-        print("Clicked");
+        zDist = rm.mainCamera.WorldToScreenPoint(transform.position).z;
+
     }
 
     public void MouseEnter()
     {
-        print("Enter");
+        
     }
 
     public void MouseExit()
     {
-        print("Exit");
+        
     }
 
     public void MouseDown()
     {
-        print("Down");
-        
+        transform.position = rm.mainCamera.ScreenToWorldPoint(rm.GetMousePosition(zDist));
     }
 
     public void MouseReleased()
     {
-        print("Released");
+        Ray ray = rm.mainCamera.ScreenPointToRay(rm.GetMousePosition());
+        if (Physics.Raycast(ray, out var hitInfo, Mathf.Infinity, crafting.craftingItemInsertLayer) &&
+            crafting.AddCraftingItem(itemData))
+        {
+            EventManager.E_Item.itemDestroyed.Invoke(gameObject);
+            Destroy(gameObject);
+            return;
+        }
+        
+        transform.localPosition = Vector3.zero; 
     }
 }

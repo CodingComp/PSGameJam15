@@ -20,6 +20,7 @@ public static class EventManager
 
     public class ItemEvents
     {
+        public UnityAction<GameObject> itemCreated;
         public UnityAction<GameObject> itemDestroyed;
     }
 
