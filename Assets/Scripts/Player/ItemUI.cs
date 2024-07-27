@@ -12,7 +12,7 @@ public class ItemUI : MonoBehaviour
     [SerializeField] private Image icon;
     [SerializeField] private TMP_Text itemCountTxt;
 
-    private void Start()
+    private void Awake()
     {
         _playerInventory = GameObject.Find("Player").GetComponent<PlayerInventory>();
         icon.sprite = itemData.icon;

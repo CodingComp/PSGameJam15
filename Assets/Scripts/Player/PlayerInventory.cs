@@ -12,6 +12,7 @@ public class PlayerInventory : MonoBehaviour
 
     [SerializeField] private GameObject inventoryUI;
     [SerializeField] private GameObject inventoryObject;
+    public GameObject droppedBackpackPrefab;
     
     [Header("Cameras")]
     public CinemachineVirtualCamera playerCamera;
@@ -101,7 +102,18 @@ public class PlayerInventory : MonoBehaviour
     {
         items[removedItem]--;
     }
-    
+
+    /// <summary>
+    /// Sets count of all items to zero. Called when the player dies.
+    /// </summary>
+    public void DropAllItems()
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            items[items.ElementAt(i).Key] = 0;
+        }
+    }
+
     /// <summary>
     /// Prints out amount of each item in inventory.
     /// </summary>

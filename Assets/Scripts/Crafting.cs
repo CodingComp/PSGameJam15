@@ -63,8 +63,6 @@ public class Crafting : MonoBehaviour, IInteractable
                 recipes.Add(gameItems[i]);
             }
         }
-        print("1");
-
     }
 
     private void Update()

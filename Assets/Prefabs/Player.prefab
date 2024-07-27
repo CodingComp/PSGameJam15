@@ -132,9 +132,10 @@ GameObject:
   - component: {fileID: 3190239943009768354}
   - component: {fileID: 1839705658479500417}
   - component: {fileID: 340726929056093024}
-  - component: {fileID: 3761937010964820937}
+  - component: {fileID: 4026793824894784434}
   - component: {fileID: 1248503549196842009}
-  m_Layer: 0
+  - component: {fileID: 3761937010964820937}
+  m_Layer: 12
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -273,6 +274,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerModel: {fileID: 2025136370352799220}
   inventory: {fileID: 0}
+  PlayerHealth: {fileID: 0}
   flashlight: {fileID: 5008474540397039407}
   moveSpeed: 6
   groundMask:
@@ -282,6 +284,38 @@ MonoBehaviour:
   lookDirectionVisualizer: {fileID: 8540656030979818976}
   cameraPivot: {fileID: 3715875707538389381}
   isBusy: 0
+--- !u!114 &4026793824894784434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1481846793404426433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73b43195a45c08b48b7358676200cda6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
+  maxHealth: 100
+--- !u!114 &1248503549196842009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1481846793404426433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a05801eff186f9c43a94c466e299f15a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inventoryUI: {fileID: 0}
+  inventoryObject: {fileID: 8067377791057897586}
+  droppedBackpackPrefab: {fileID: 7359233950720747998, guid: 89b9ec17d2d014d4dbafa12e17a342e0,
+    type: 3}
+  playerCamera: {fileID: 8821383697491663760}
+  inventoryCamera: {fileID: 834941876151641919}
 --- !u!114 &3761937010964820937
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -301,21 +335,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   rm: {fileID: 0}
---- !u!114 &1248503549196842009
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1481846793404426433}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a05801eff186f9c43a94c466e299f15a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inventoryObject: {fileID: 8067377791057897586}
-  playerCamera: {fileID: 8821383697491663760}
-  inventoryCamera: {fileID: 834941876151641919}
 --- !u!1 &2199134296323213602
 GameObject:
   m_ObjectHideFlags: 0

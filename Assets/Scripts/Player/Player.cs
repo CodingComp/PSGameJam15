@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
 {
     public GameObject playerModel;
     public PlayerInventory inventory;
+    public PlayerHealth PlayerHealth;
     public GameObject flashlight;
 
     [Header("Movement")]
@@ -40,12 +41,15 @@ public class Player : MonoBehaviour
         rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
         rb = GetComponent<Rigidbody>();
         inventory = GetComponent<PlayerInventory>();
+        PlayerHealth = GetComponent<PlayerHealth>();
         
         targetRot = cameraPivot.transform.rotation;
     }
 
     void FixedUpdate()
     {
+        if (isBusy) return;
+        
         moveDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
         rb.AddForce(moveDir.normalized * (moveSpeed * 10.0f), ForceMode.Force);
     }

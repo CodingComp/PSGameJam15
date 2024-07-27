@@ -38,7 +38,7 @@ public class DisplayedItem : MonoBehaviour, IInteractable
 
     public void MouseDown()
     {
-        transform.position = rm.mainCamera.ScreenToWorldPoint(rm.GetMousePosition(zDist));
+        transform.position = rm.mainCamera.ScreenToWorldPoint(rm.GetMousePosition(zDist) + new Vector3(0,-20,0));
     }
 
     public void MouseReleased()
