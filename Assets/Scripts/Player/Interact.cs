@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,20 +26,13 @@ public class Interact : MonoBehaviour
     private Dictionary<GameObject, IInteractable> interactables;
     private GameObject hoveredInteractable;
 
-    private bool craftingMode = false;
+    private IInteractable currentInteractable = null;
     
-    void Start()
-    {
-        rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
+    private bool craftingMode = false;
 
+    private void Awake()
+    {
         interactables = new Dictionary<GameObject, IInteractable>();
-        // Gets all interactable objects already placed in the world 
-        IEnumerable<IInteractable> interactableObjects = FindObjectsOfType<MonoBehaviour>().OfType<IInteractable>();
-        foreach (IInteractable interactable in interactableObjects)
-        {
-            interactables.Add(((MonoBehaviour)interactable).gameObject, interactable);
-        }
-        
         // Events
         EventManager.E_Item.itemCreated += (item) =>
         {
@@ -51,10 +45,37 @@ public class Interact : MonoBehaviour
             interactables.Remove(item);
         };
         EventManager.E_Crafting.modeChanged += (mode) => craftingMode = mode;
+        EventManager.E_Crafting.resetInteractable += () => currentInteractable = null;
+    }
+
+    void Start()
+    {
+        rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
+        
+        // Gets all interactable objects already placed in the world 
+        IEnumerable<IInteractable> interactableObjects = FindObjectsOfType<MonoBehaviour>().OfType<IInteractable>();
+        foreach (IInteractable interactable in interactableObjects)
+        {
+            interactables.Add(((MonoBehaviour)interactable).gameObject, interactable);
+        }
     }
 
     void Update()
     {
+        if (currentInteractable is not null)
+        {
+            // Mouse Held
+            if (Input.GetKey(KeyCode.Mouse0)) currentInteractable.MouseDown();
+            // Mouse Released
+            if (Input.GetKeyUp(KeyCode.Mouse0))
+            {
+               currentInteractable.MouseReleased();
+                currentInteractable = null;
+            }
+
+            return;
+        }
+
         // Checks if the cursor is hovering over an interactable object
         Ray ray = rm.mainCamera.ScreenPointToRay(rm.GetMousePosition());
         if (Physics.Raycast(ray, out var hitInfo, Mathf.Infinity, craftingMode ? craftItemLayer : interactLayer))
@@ -72,11 +93,11 @@ public class Interact : MonoBehaviour
             }
             
             // Interact - Mouse Click
-            if (Input.GetKeyDown(KeyCode.Mouse0)) interactables[hitInfo.transform.gameObject].Interact();
-            // Mouse Held
-            else if (Input.GetKey(KeyCode.Mouse0)) interactables[hitInfo.transform.gameObject].MouseDown();
-            // Mouse Released
-            if (Input.GetKeyUp(KeyCode.Mouse0)) interactables[hitInfo.transform.gameObject].MouseReleased();
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                currentInteractable = interactables[hitInfo.transform.gameObject];
+                currentInteractable.Interact();
+            }
         }
         else if (hoveredInteractable is not null) // Mouse Exit
         {

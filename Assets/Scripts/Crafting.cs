@@ -47,6 +47,9 @@ public class Crafting : MonoBehaviour, IInteractable
 
     // List of all items that can be crafted / all recipes.
     public List<ItemData> recipes;
+
+    [SerializeField] private Transform leverTransform;
+    [SerializeField] private CraftingLever lever;
     
     private void Start()
     {
@@ -134,7 +137,7 @@ public class Crafting : MonoBehaviour, IInteractable
         return true;
     }
 
-    void Craft()
+    public void Craft()
     {
         if (craftingItems.Count != 3) CraftFailed();
 
