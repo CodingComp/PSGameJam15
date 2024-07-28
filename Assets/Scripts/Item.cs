@@ -1,16 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Item : MonoBehaviour, IInteractable
 {
     [SerializeField] private ItemData itemData;
-
+    
+    [Header("Light Visualizer")]
+    [SerializeField] private Transform lightPivot;
     [SerializeField] private List<Light> lights;
+    private float rotSpeed = 10.0f;
+    private Quaternion lightRotTarget;
     
     [SerializeField] private Color hoverColor;
-    [SerializeField] private float hoverIntensity = 0.5f;
+    [SerializeField] private float hoverIntensity;
 
     private Color currentLightColor;
     private float currentIntensity;
@@ -28,11 +33,14 @@ public class Item : MonoBehaviour, IInteractable
         baseColor = lights[0].color;
         baseIntensity = lights[0].intensity;
         currentLightColor = baseColor;
+
+        lightRotTarget = quaternion.Euler(0,0,0);
+        EventManager.E_Player.playerRotated += (newRot) => lightRotTarget = newRot;
     }
     
     void Update()
     {
-        
+        lightPivot.transform.rotation = Quaternion.Lerp(lightPivot.transform.rotation, lightRotTarget, Time.deltaTime * rotSpeed);
     }
 
     /// <summary>
@@ -50,13 +58,21 @@ public class Item : MonoBehaviour, IInteractable
     /// </summary>
     public void ItemNotAdded()
     {
+        StartCoroutine(DisplayNotAdded());
+    }
+
+    private IEnumerator DisplayNotAdded()
+    {
         foreach (Light l in lights)
         {
             l.color = Color.red;
         }
-        Invoke("UpdateLights", 0.5f);
+
+        yield return new WaitForSeconds(0.5f);
+        
+        UpdateLights();
     }
-    
+
     private void UpdateLights()
     {
         foreach (Light l in lights)
@@ -65,7 +81,7 @@ public class Item : MonoBehaviour, IInteractable
             l.intensity = currentIntensity;
         }
     }
-
+    
     /*
      * Interact Interface
      */

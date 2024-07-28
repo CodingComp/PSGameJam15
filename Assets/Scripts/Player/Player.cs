@@ -11,8 +11,8 @@ public class Player : MonoBehaviour
     public GameObject playerModel;
     public PlayerInventory inventory;
     public PlayerHealth PlayerHealth;
-    public GameObject flashlight;
-
+    public EquipmentManager eqm;
+    
     [Header("Movement")]
     public float moveSpeed = 10.0f;
     private Vector3 moveDir;
@@ -40,6 +40,7 @@ public class Player : MonoBehaviour
 
         rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
         rb = GetComponent<Rigidbody>();
+        eqm = GetComponent<EquipmentManager>();
         inventory = GetComponent<PlayerInventory>();
         PlayerHealth = GetComponent<PlayerHealth>();
         
@@ -58,12 +59,6 @@ public class Player : MonoBehaviour
     {
         if (isBusy) return;
         
-        // Temp flashlight testing
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            flashlight.SetActive(!flashlight.activeSelf);
-        }
-        
         // Rotate Camera
         if (Input.GetKeyDown(KeyCode.E)) RotateCamera(Quaternion.Euler(0,  90f, 0)); // Right
         if (Input.GetKeyDown(KeyCode.Q)) RotateCamera(Quaternion.Euler(0, -90f, 0)); // Left
@@ -76,6 +71,7 @@ public class Player : MonoBehaviour
     void RotateCamera(Quaternion rot)
     {
         targetRot *= rot;
+        EventManager.E_Player.playerRotated.Invoke(targetRot);
     }
 
     void Movement()
@@ -101,8 +97,8 @@ public class Player : MonoBehaviour
     public void StartAction()
     {
         isBusy = true;
-        flashlightStateBeforeAction = flashlight.activeSelf;
-        flashlight.SetActive(false);
+        flashlightStateBeforeAction = eqm.flashlight.activeSelf;
+        eqm.flashlight.SetActive(false);
     }
 
     /// <summary>
@@ -111,7 +107,7 @@ public class Player : MonoBehaviour
     public void EndAction()
     {
         isBusy = false;
-        flashlight.SetActive(flashlightStateBeforeAction);
+        eqm.flashlight.SetActive(flashlightStateBeforeAction);
     }
 
 }

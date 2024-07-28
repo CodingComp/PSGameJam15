@@ -16,6 +16,7 @@ public static class EventManager
     public class PlayerEvents
     {
         public UnityAction<Item, ItemData> itemPickedUp;
+        public UnityAction<Quaternion> playerRotated;
     }
 
     public class ItemEvents
