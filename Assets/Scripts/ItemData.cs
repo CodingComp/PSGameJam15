@@ -1,9 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UI;
 
 [Serializable]
 public struct Recipe
@@ -17,13 +13,9 @@ public struct Recipe
 public class ItemData : ScriptableObject
 {
     public string itemName;
-    
     public Sprite icon;
-    
     public GameObject mesh;
-    
     public int maxStackSize = 3;
-
     public bool canBeCrafted;
     public Recipe craftRecipe;
 }

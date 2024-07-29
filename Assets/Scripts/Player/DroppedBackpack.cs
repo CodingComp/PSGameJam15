@@ -1,25 +1,23 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class DroppedBackpack : MonoBehaviour, IInteractable
 {
-    private Player _player;
-    private float baseIntensity;
-    
     [SerializeField] private List<Light> lights;
     [SerializeField] private Color hoverColor;
     [SerializeField] private float hoverIntensity = 1.0f;
-    
+    private float _baseIntensity;
+    private Player _player;
+
     public Dictionary<ItemData, int> droppedItems;
-    
-    void Start()
+
+    private void Start()
     {
         _player = GameObject.Find("Player").GetComponent<Player>();
-        baseIntensity = lights[0].intensity;
+        _baseIntensity = lights[0].intensity;
         EventManager.E_Item.itemCreated.Invoke(gameObject);
     }
-    
+
     public void Interact()
     {
         _player.inventory.items = droppedItems;
@@ -29,29 +27,29 @@ public class DroppedBackpack : MonoBehaviour, IInteractable
 
     public void MouseEnter()
     {
-        foreach (Light light in lights)
+        foreach (Light l in lights)
         {
-            light.color = Color.green;
-            light.intensity = hoverIntensity;
+            l.color = Color.green;
+            l.intensity = hoverIntensity;
         }
     }
 
     public void MouseExit()
     {
-        foreach (Light light in lights)
+        foreach (Light l in lights)
         {
-            light.color = Color.white;
-            light.intensity = baseIntensity;
+            l.color = Color.white;
+            l.intensity = _baseIntensity;
         }
     }
 
     public void MouseDown()
     {
-        
+
     }
 
     public void MouseReleased()
     {
-        
+
     }
 }

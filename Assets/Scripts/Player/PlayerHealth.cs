@@ -1,24 +1,18 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    private Player _player;
     [SerializeField] private float health = 100.0f;
     [SerializeField] private float maxHealth = 100.0f;
-    
-    private Vector3 respawnPosition;
-    
-    void Start()
+    private Player _player;
+
+    private Vector3 _respawnPosition;
+
+    private void Start()
     {
         _player = GetComponent<Player>();
-        respawnPosition = transform.position;
-    }
-    
-    void Update()
-    {
-        
+        _respawnPosition = transform.position;
     }
 
     public void TakeDamage(float damage)
@@ -38,10 +32,10 @@ public class PlayerHealth : MonoBehaviour
         GameObject droppedBackpack = Instantiate(_player.inventory.droppedBackpackPrefab);
         droppedBackpack.transform.position = transform.position;
         droppedBackpack.GetComponent<DroppedBackpack>().droppedItems = new Dictionary<ItemData, int>(_player.inventory.items);
-        
+
         _player.inventory.DropAllItems();
-        
-        transform.position = respawnPosition;
+
+        transform.position = _respawnPosition;
         health = maxHealth;
     }
 }

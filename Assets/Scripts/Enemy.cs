@@ -1,73 +1,87 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 /// <summary>
-/// Base Enemy Class.
+///     Base Enemy Class.
 /// </summary>
 public class Enemy : MonoBehaviour
 {
     public EnemyManager em;
-    private Material mat;
-    
+
     public float health = 100.0f;
-    public bool inLight = false;
+    public bool inLight;
 
     [SerializeField] private float attackDamage = 10.0f;
-    
-    [Header("AI Variables")]
+
+    [Header("AI Variables")] 
+    public Vector3 walkPoint;
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private LayerMask groundLayer, playerLayer;
-
-    public Vector3 walkPoint;
-    
     [SerializeField] private float walkPointRange;
     [SerializeField] private float timeBetweenAttacks;
     [SerializeField] private float sightRange, attackRange;
 
     private Player _player;
-    private bool playerInSightRange, playerInAttackRange, walkPointSet, alreadyAttacked;
+    private Material _mat;
+    private bool _playerInSightRange, _playerInAttackRange, _walkPointSet, _alreadyAttacked;
 
     private void Awake()
     {
         _player = GameObject.Find("Player").GetComponent<Player>();
         agent = GetComponent<NavMeshAgent>();
-        mat = GetComponent<Renderer>().material;
+        _mat = GetComponent<Renderer>().material;
     }
-    
-    void Update()
+
+    private void Update()
     {
 
-        playerInSightRange = Physics.CheckSphere(transform.position, sightRange, playerLayer);
-        playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, playerLayer);
+        _playerInSightRange = Physics.CheckSphere(transform.position, sightRange, playerLayer);
+        _playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, playerLayer);
 
-        if (!playerInSightRange && !playerInAttackRange) Patrol();
-        if (playerInSightRange && !playerInAttackRange) Chase();
-        if (playerInAttackRange && playerInSightRange) Attack();
-        
+        if (!_playerInSightRange && !_playerInAttackRange) Patrol();
+        if (_playerInSightRange && !_playerInAttackRange) Chase();
+        if (_playerInAttackRange && _playerInSightRange) Attack();
+
         if (inLight)
         {
-            mat.color = Color.green;
-            
+            _mat.color = Color.green;
+
             // Damage Testing
             health -= 100.0f * Time.deltaTime;
             if (health <= 0.0f) em.EnemyDied(this);
         }
-        else mat.color = Color.red;
+        else _mat.color = Color.red;
+    }
+
+    private void OnBecameInvisible()
+    {
+        em.EnemyLeftVisibility(this);
+    }
+
+    private void OnBecameVisible()
+    {
+        em.EnemyVisible(this);
+    }
+
+    // Draws sight / attack ranges
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, sightRange);
     }
 
     private void Patrol()
     {
-        if (!walkPointSet) GetWalkPoint();
+        if (!_walkPointSet) GetWalkPoint();
 
-        if (walkPointSet) agent.SetDestination(walkPoint);
+        if (_walkPointSet) agent.SetDestination(walkPoint);
 
         Vector3 distanceToWalkPoint = transform.position - walkPoint;
-        if (distanceToWalkPoint.magnitude < 1f) walkPointSet = false;
+        if (distanceToWalkPoint.magnitude < 1f) _walkPointSet = false;
     }
 
     private void GetWalkPoint()
@@ -78,7 +92,7 @@ public class Enemy : MonoBehaviour
         walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
 
         if (Physics.Raycast(walkPoint, -transform.up, 2f, groundLayer))
-            walkPointSet = true;
+            _walkPointSet = true;
     }
 
     private void Chase()
@@ -91,37 +105,18 @@ public class Enemy : MonoBehaviour
         agent.SetDestination(transform.position);
         transform.LookAt(_player.transform);
 
-        if (!alreadyAttacked)
+        if (!_alreadyAttacked)
         {
-            _player.PlayerHealth.TakeDamage(attackDamage);
-            
-            alreadyAttacked = true;
+            _player.playerHealth.TakeDamage(attackDamage);
+
+            _alreadyAttacked = true;
             StartCoroutine(ResetAttack());
         }
     }
-    
+
     private IEnumerator ResetAttack()
     {
         yield return new WaitForSeconds(timeBetweenAttacks);
-        alreadyAttacked = false;
-    }
-    
-    private void OnBecameVisible()
-    {
-        em.EnemyVisible(this);
-    }
-    
-    private void OnBecameInvisible()
-    {
-        em.EnemyLeftVisibility(this);
-    }
-    
-    // Draws sight / attack ranges
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, sightRange);
+        _alreadyAttacked = false;
     }
 }

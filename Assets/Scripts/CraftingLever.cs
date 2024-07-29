@@ -1,59 +1,56 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CraftingLever : MonoBehaviour, IInteractable
 {
     public Transform leverTransform;
     public Crafting crafting;
-    private ResolutionManager rm;
-    
-    private float maxRot = 135.0f;
-    private float minRot = 0.0f;
 
-    private Vector3 startMousePos;
-    private bool canUseLever = true;
+    private const float MaxRot = 135.0f;
+    private const float MinRot = 0.0f;
+    private bool _canUseLever = true;
+    private ResolutionManager _rm;
 
-    private Quaternion startRotation;
-    
+    private Vector3 _startMousePos;
+    private Quaternion _startRotation;
+
     private void Start()
     {
-        rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
-        startRotation = leverTransform.rotation;
+        _rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
+        _startRotation = leverTransform.rotation;
     }
 
     public void Interact()
     {
-        startMousePos = rm.GetMousePosition();// - new Vector3(0,minRot,0);
+        _startMousePos = _rm.GetMousePosition();
     }
 
     public void MouseEnter()
     {
-        
+
     }
 
     public void MouseExit()
     {
-        
+
     }
 
     public void MouseDown()
     {
-        Vector3 movementDiff = startMousePos - rm.GetMousePosition();
-        
-        if (!canUseLever) return;
+        Vector3 movementDiff = _startMousePos - _rm.GetMousePosition();
+
+        if (!_canUseLever) return;
 
         // Checks if lever is in down position
-        if (movementDiff.y >= maxRot)
+        if (movementDiff.y >= MaxRot)
         {
             crafting.Craft();
-            canUseLever = false;
+            _canUseLever = false;
             MouseReleased();
             return;
         }
-        if (movementDiff.y > maxRot || movementDiff.y < minRot) return;
-        
+        if (movementDiff.y > MaxRot || movementDiff.y < MinRot) return;
+
         Quaternion rotation = Quaternion.Euler(movementDiff.y, 180.0f, 0);
         leverTransform.rotation = rotation;
     }
@@ -67,15 +64,15 @@ public class CraftingLever : MonoBehaviour, IInteractable
     public IEnumerator ReturnToStartPos()
     {
         yield return new WaitForSeconds(0.2f);
-        
+
         float time = 0.0f;
         while (time < 0.25f)
         {
             // Lerps player items display to target position
-            leverTransform.rotation = Quaternion.Lerp(leverTransform.rotation, startRotation, time);
+            leverTransform.rotation = Quaternion.Lerp(leverTransform.rotation, _startRotation, time);
             time += Time.deltaTime;
             yield return null;
         }
-        canUseLever = true;
+        _canUseLever = true;
     }
 }

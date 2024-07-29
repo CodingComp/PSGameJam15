@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cinemachine;
@@ -7,37 +5,26 @@ using UnityEngine;
 
 public class PlayerInventory : MonoBehaviour
 {
-    private Player _player;
-    private bool inInventory = false;
-
     [SerializeField] private GameObject inventoryUI;
     [SerializeField] private GameObject inventoryObject;
     public GameObject droppedBackpackPrefab;
-    
-    [Header("Cameras")]
+
+    [Header("Cameras")] 
     public CinemachineVirtualCamera playerCamera;
     public CinemachineVirtualCamera inventoryCamera;
+    private bool _inInventory;
+    private Player _player;
 
     // Items held by the player.
     public Dictionary<ItemData, int> items = new Dictionary<ItemData, int>();
-    
-    private void OnEnable()
-    {
-        EventManager.E_Player.itemPickedUp += AddItem;
-    }
 
-    private void OnDisable()
-    {
-        EventManager.E_Player.itemPickedUp -= AddItem;
-    }
-    
     private void Awake()
     {
         _player = GetComponent<Player>();
         items = new Dictionary<ItemData, int>();
-        
+
         // Loads each item from the game and puts it into the inventory dictionary.
-        ItemData[] gameItems = Resources.LoadAll<ItemData>("Items/");
+        ItemData [] gameItems = Resources.LoadAll<ItemData>("Items/");
         for (int i = 0; i < gameItems.Length; i++)
         {
             items.Add(gameItems[i], 0);
@@ -47,37 +34,47 @@ public class PlayerInventory : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha3)) DebugPrintInventory();
-        
-        if (!(Input.GetKeyDown(KeyCode.Tab) && (!_player.isBusy || inInventory))) return;
-        
-        if (!inInventory)
+
+        if (!(Input.GetKeyDown(KeyCode.Tab) && (!_player.isBusy || _inInventory))) return;
+
+        if (!_inInventory)
         {
-            inInventory = true;
+            _inInventory = true;
             inventoryObject.SetActive(true);
             inventoryUI.SetActive(true);
-            
+
             inventoryCamera.Priority = 10;
             playerCamera.Priority = 1;
-            
+
             _player.StartAction();
         }
         else
         {
-            inInventory = false;
-            
+            _inInventory = false;
+
             playerCamera.Priority = 10;
             inventoryCamera.Priority = 1;
-            
+
             inventoryObject.SetActive(false);
             inventoryUI.SetActive(false);
             _player.EndAction();
         }
     }
 
+    private void OnEnable()
+    {
+        EventManager.E_Player.itemPickedUp += AddItem;
+    }
+
+    private void OnDisable()
+    {
+        EventManager.E_Player.itemPickedUp -= AddItem;
+    }
+
 
     /// <summary>
-    /// Tries to add an item to the players inventory. If the player has a full stack of said item the item won't be added.
-    /// Otherwise the item is added to the inventory and the proper callbacks are called.
+    ///     Tries to add an item to the players inventory. If the player has a full stack of said item the item won't be added.
+    ///     Otherwise the item is added to the inventory and the proper callbacks are called.
     /// </summary>
     /// <param name="item">New Item's Object</param>
     /// <param name="itemData">New Item's ItemData</param>
@@ -93,9 +90,9 @@ public class PlayerInventory : MonoBehaviour
             item.ItemNotAdded();
         }
     }
-    
+
     /// <summary>
-    /// Removes item from the player's inventory.
+    ///     Removes item from the player's inventory.
     /// </summary>
     /// <param name="removedItem">Item to remove</param>
     public void RemoveItem(ItemData removedItem)
@@ -104,7 +101,7 @@ public class PlayerInventory : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets count of all items to zero. Called when the player dies.
+    ///     Sets count of all items to zero. Called when the player dies.
     /// </summary>
     public void DropAllItems()
     {
@@ -115,15 +112,17 @@ public class PlayerInventory : MonoBehaviour
     }
 
     /// <summary>
-    /// Prints out amount of each item in inventory.
+    ///     Prints out amount of each item in inventory.
     /// </summary>
-    void DebugPrintInventory()
+    private void DebugPrintInventory()
     {
         print("Player Inventory \n =================");
-        
+
         foreach (KeyValuePair<ItemData, int> item in items)
+        {
             print(item.Key.itemName + " : " + item.Value + "\n-----------------\n");
-        
+        }
+
         print("=================");
     }
 }

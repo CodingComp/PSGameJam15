@@ -1,16 +1,13 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using Image = UnityEngine.UI.Image;
 
 public class ItemUI : MonoBehaviour
 {
-    private PlayerInventory _playerInventory;
     public ItemData itemData;
     [SerializeField] private Image icon;
     [SerializeField] private TMP_Text itemCountTxt;
+    private PlayerInventory _playerInventory;
 
     private void Awake()
     {

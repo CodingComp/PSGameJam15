@@ -1,49 +1,50 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DisplayedItem : MonoBehaviour, IInteractable
 {
     public Crafting crafting;
     public ItemData itemData;
-    private ResolutionManager rm;
-    private float zDist;
-    
+    public Material hoverMat;
+    private Material _baseMat;
+    private Renderer _renderer;
+    private ResolutionManager _rm;
+    private float _zDist;
+
     private void Start()
     {
-        rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
+        _rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
         EventManager.E_Item.itemCreated.Invoke(gameObject);
+        _renderer = transform.GetChild(0).GetComponent<Renderer>();
+        _baseMat = _renderer.material;
     }
 
     /*
      * Interact Interface
      */
-    
+
     public void Interact()
     {
-        zDist = rm.mainCamera.WorldToScreenPoint(transform.position).z;
-
+        _zDist = _rm.mainCamera.WorldToScreenPoint(transform.position).z;
     }
 
     public void MouseEnter()
     {
-        
+        _renderer.materials = new [] {_baseMat, hoverMat};
     }
 
     public void MouseExit()
     {
-        
+        _renderer.materials = new [] {_baseMat};
     }
 
     public void MouseDown()
     {
-        transform.position = rm.mainCamera.ScreenToWorldPoint(rm.GetMousePosition(zDist) + new Vector3(0,-20,0));
+        transform.position = _rm.mainCamera.ScreenToWorldPoint(_rm.GetMousePosition(_zDist) + new Vector3(0, -20, 0));
     }
 
     public void MouseReleased()
     {
-        Ray ray = rm.mainCamera.ScreenPointToRay(rm.GetMousePosition());
+        Ray ray = _rm.mainCamera.ScreenPointToRay(_rm.GetMousePosition());
         if (Physics.Raycast(ray, out var hitInfo, Mathf.Infinity, crafting.craftingItemInsertLayer) &&
             crafting.AddCraftingItem(itemData))
         {
@@ -51,7 +52,7 @@ public class DisplayedItem : MonoBehaviour, IInteractable
             Destroy(gameObject);
             return;
         }
-        
-        transform.localPosition = Vector3.zero; 
+
+        transform.localPosition = Vector3.zero;
     }
 }
