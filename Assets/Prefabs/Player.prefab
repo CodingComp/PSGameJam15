@@ -311,6 +311,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   rm: {fileID: 0}
+  hoverMat: {fileID: 2100000, guid: c2ac7d050842ffd4faabf6cb92dd23b6, type: 2}
 --- !u!1 &2199134296323213602
 GameObject:
   m_ObjectHideFlags: 0

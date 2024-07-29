@@ -30,5 +30,6 @@ public static class EventManager
         // Crafting mode changed, true / false for current crafting mode.
         public UnityAction<bool> modeChanged;
         public UnityAction resetInteractable;
+        public UnityAction updateDisplayedItems;
     }
 }

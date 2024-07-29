@@ -2,9 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 [Serializable]
 public class ItemLocations
@@ -31,31 +29,45 @@ public class Crafting : MonoBehaviour, IInteractable
     [SerializeField] private GameObject playerItemsDisplay;
     [SerializeField] private Transform onScreenPosition;
     [SerializeField] private Transform offScreenPosition;
-    public Vector3 targetPos;
-    private float itemsDisplayTransitionTime = 0.5f;
-    private float lerpSpeed = 1.0f;
-
+    [SerializeField] private Material hoverMaterial;
+    
     [Header("Crafting Item Locations")] 
+    [SerializeField] private List<Transform> insertedItemLocations;
+    [SerializeField] private Transform craftedItemLocation;
     [SerializeField] private List<ItemLocations> craftingItemsLocations;
-
-    private bool inCraftingMode;
-    private bool cursorHovered;
-
+    
     // Current items in the crafting fabricator
-    private List<ItemData> craftingItems;
+    public List<ItemData> craftingItems;
     public LayerMask craftingItemInsertLayer;
 
     // List of all items that can be crafted / all recipes.
     public List<ItemData> recipes;
+    
+    [Header("Door Variables")] 
+    [SerializeField] private Transform doorTransform;
+    private Quaternion doorOpenRot = Quaternion.Euler(0,160 + 180,0);
+    private Quaternion doorCloseRot = Quaternion.Euler(0, 180, 0);
 
-    [SerializeField] private Transform leverTransform;
-    [SerializeField] private CraftingLever lever;
+    [Header("Craft Visual Variables")] 
+    [SerializeField] private float craftTime;
+    [SerializeField] private float itemsDisplayTransitionTime = 0.5f;
+    [SerializeField] private float lerpSpeed = 1.0f;
+    private Vector3 diaplyItemsTargetPos;
+
+    private ItemData craftedItem;
+    
+    private bool inCraftingMode;
+    private bool cursorHovered;
+    private bool canCraft = true;
+
+    private Color hoverColor;
     
     private void Start()
     {
-        hoverOverLight.intensity = 0.0f;
-        targetPos = offScreenPosition.position;
+        diaplyItemsTargetPos = offScreenPosition.position;
         craftingItems = new List<ItemData>();
+        hoverColor = hoverOverLight.color;
+        hoverOverLight.enabled = false;
         
         // Loads each item from the game, checks if said item can be crafted and adds it to the recipes list.
         ItemData[] gameItems = Resources.LoadAll<ItemData>("Items/");
@@ -66,6 +78,8 @@ public class Crafting : MonoBehaviour, IInteractable
                 recipes.Add(gameItems[i]);
             }
         }
+
+        EventManager.E_Crafting.updateDisplayedItems += UpdateDisplayItems;
     }
 
     private void Update()
@@ -84,10 +98,10 @@ public class Crafting : MonoBehaviour, IInteractable
         player.StartAction();
         inCraftingMode = true;
 
-        updateDisplayItems();
+        UpdateDisplayItems();
 
         EventManager.E_Crafting.modeChanged(true);
-        StartCoroutine(displayItems());
+        StartCoroutine(DisplayItems());
     }
 
     void LeaveCraftingMode()
@@ -98,9 +112,10 @@ public class Crafting : MonoBehaviour, IInteractable
         player.EndAction();
         inCraftingMode = false;
         
-        StartCoroutine(removeDisplayItems());
-        
-        if (cursorHovered) hoverOverLight.intensity = 5.0f;
+        ClearItems();
+        StartCoroutine(RemoveDisplayItems());
+
+        if (cursorHovered) hoverOverLight.enabled = true;
     }
 
     void CreateDisplayItem(ItemData itemData, ItemLocations itemLocations, int locationIndex)
@@ -111,7 +126,7 @@ public class Crafting : MonoBehaviour, IInteractable
         dItem.itemData = itemData;
     }
     
-    private void updateDisplayItems()
+    private void UpdateDisplayItems()
     {
         // Creates ItemDisplay objects to be displayed
         foreach (ItemLocations itemLocations in craftingItemsLocations)
@@ -130,8 +145,19 @@ public class Crafting : MonoBehaviour, IInteractable
     
     public bool AddCraftingItem(ItemData craftingItemData)
     {
-        if (craftingItems.Count == 3) return false;
-        
+        if (craftingItems.Count == 3 || !canCraft) return false;
+
+        foreach (Transform location in insertedItemLocations)
+        {
+            if (location.childCount == 0)
+            {
+                GameObject displayedItem = Instantiate(craftingItemData.mesh, location);
+                InsertedCraftingItem ici = displayedItem.AddComponent<InsertedCraftingItem>();
+                ici.Setup(this, player.inventory, craftingItemData, hoverMaterial);
+                break;
+            }
+        }
+
         craftingItems.Add(craftingItemData);
         player.inventory.RemoveItem(craftingItemData);
         return true;
@@ -139,7 +165,11 @@ public class Crafting : MonoBehaviour, IInteractable
 
     public void Craft()
     {
-        if (craftingItems.Count != 3) CraftFailed();
+        if (craftingItems.Count != 3)
+        {
+            CraftFailed();
+            return;
+        }
 
         // Checks Recipes
         for (int i = 0; i < recipes.Count; i++)
@@ -161,28 +191,52 @@ public class Crafting : MonoBehaviour, IInteractable
         CraftFailed();
     }
     
-    void CraftSucceeded(ItemData itemCrafted)
+    private void CraftSucceeded(ItemData itemCrafted)
     {
-        // Adds crafted item to player inventory
-        player.inventory.items[itemCrafted]++;
-        
-        craftingItems = new List<ItemData>();
-        updateDisplayItems();
+        craftedItem = itemCrafted;
+        canCraft = false;
+        StartCoroutine(DisplayCraftSucceeded());
     }
 
-    void CraftFailed()
+    private void CraftFailed()
+    {
+        StartCoroutine(DisplayCraftFailed());
+    }
+
+    // Removes inserted items from crafter back to players inventory. 
+    private void ClearItems()
     {
         // Adds inserted items back to player inventory
         for (int i = 0; i < craftingItems.Count; i++)
         {
             player.inventory.items[craftingItems[i]]++;    
         }
-        
-        craftingItems = new List<ItemData>();
-        updateDisplayItems();
+
+        if (craftedItemLocation.childCount != 0)
+        {
+            player.inventory.items[craftedItem]++;
+            EventManager.E_Item.itemDestroyed.Invoke(craftedItemLocation.GetChild(0).gameObject);
+            Destroy(craftedItemLocation.GetChild(0).gameObject);
+        }
+
+        RemoveInsertedItems();
+        UpdateDisplayItems();
     }
 
-    bool IsRecipe(Recipe itemRecipe)
+    private void RemoveInsertedItems()
+    {
+        craftingItems = new List<ItemData>();
+        foreach (Transform location in insertedItemLocations)
+        {
+            if (location.childCount != 0)
+            {
+                EventManager.E_Item.itemDestroyed.Invoke(location.GetChild(0).gameObject);
+                Destroy(location.GetChild(0).gameObject);
+            }
+        }
+    }
+    
+    private bool IsRecipe(Recipe itemRecipe)
     {
         List<ItemData> itemChecklist = new List<ItemData>() { itemRecipe.item1, itemRecipe.item2, itemRecipe.item3 };
 
@@ -208,18 +262,19 @@ public class Crafting : MonoBehaviour, IInteractable
     /// <summary>
     /// Smoothly moves the crafting items to the players view after the camera is zoomed in.
     /// </summary>
-    private IEnumerator displayItems()
+    private IEnumerator DisplayItems()
     {
         yield return new WaitForSeconds(0.75f);
         
         playerItemsDisplay.SetActive(true);
-        targetPos = onScreenPosition.position;
+        diaplyItemsTargetPos = onScreenPosition.position;
 
         float time = 0.0f;
         while (time < itemsDisplayTransitionTime)
         {
             // Lerps player items display to target position
-            playerItemsDisplay.transform.position = Vector3.Lerp(playerItemsDisplay.transform.position, targetPos, time);
+            playerItemsDisplay.transform.position = Vector3.Lerp(playerItemsDisplay.transform.position, diaplyItemsTargetPos, time);
+            doorTransform.rotation = Quaternion.Lerp(doorTransform.rotation, doorOpenRot, time);
             time += Time.deltaTime * lerpSpeed;
             yield return null;
         }
@@ -228,15 +283,16 @@ public class Crafting : MonoBehaviour, IInteractable
     /// <summary>
     /// Smoothly removes the player crafting items from view once the player exits the crafting fabricator.
     /// </summary>
-    private IEnumerator removeDisplayItems()
+    private IEnumerator RemoveDisplayItems()
     {
-        targetPos = offScreenPosition.position;
+        diaplyItemsTargetPos = offScreenPosition.position;
 
         float time = 0.0f;
         while (time < itemsDisplayTransitionTime)
         {
             // Lerps player items display to target position
-            playerItemsDisplay.transform.position = Vector3.Lerp(playerItemsDisplay.transform.position, targetPos, time);
+            playerItemsDisplay.transform.position = Vector3.Lerp(playerItemsDisplay.transform.position, diaplyItemsTargetPos, time);
+            doorTransform.rotation = Quaternion.Lerp(doorTransform.rotation, doorCloseRot, time);
             time += Time.deltaTime * lerpSpeed;
             yield return null;
         }
@@ -256,6 +312,46 @@ public class Crafting : MonoBehaviour, IInteractable
         playerItemsDisplay.SetActive(false);
     }
 
+    private IEnumerator DisplayCraftSucceeded()
+    {
+        float time = 0.0f;
+        while (time < itemsDisplayTransitionTime)
+        {
+            doorTransform.rotation = Quaternion.Lerp(doorTransform.rotation, doorCloseRot, time);
+            time += Time.deltaTime * lerpSpeed;
+            yield return null;
+        }
+        
+        yield return new WaitForSeconds(craftTime);
+        
+        RemoveInsertedItems();
+        
+        GameObject displayedItem = Instantiate(craftedItem.mesh, craftedItemLocation);
+        InsertedCraftingItem ici = displayedItem.AddComponent<InsertedCraftingItem>();
+        ici.Setup(this, player.inventory, craftedItem, hoverMaterial);
+        
+        time = 0.0f;
+        while (time < itemsDisplayTransitionTime)
+        {
+            doorTransform.rotation = Quaternion.Lerp(doorTransform.rotation, doorOpenRot, time);
+            time += Time.deltaTime * lerpSpeed;
+            yield return null;
+        }
+
+        canCraft = true;
+    }
+
+    private IEnumerator DisplayCraftFailed()
+    {
+        hoverOverLight.color = Color.red;
+        hoverOverLight.enabled = true;
+        
+        yield return new WaitForSeconds(0.5f);
+
+        hoverOverLight.enabled = false;
+        hoverOverLight.color = hoverColor;
+    }
+
     /*
      * Interact Interface
      */
@@ -264,21 +360,20 @@ public class Crafting : MonoBehaviour, IInteractable
     {
         if (inCraftingMode) return;
         EnterCraftingMode();
-        hoverOverLight.intensity = 0.0f;
+        hoverOverLight.enabled = false;
     }
 
     public void MouseEnter()
     {
         cursorHovered = true;
         if (inCraftingMode) return;
-        
-        hoverOverLight.intensity = 5.0f;
+        hoverOverLight.enabled = true;
     }
 
     public void MouseExit()
     {
         cursorHovered = false;
-        hoverOverLight.intensity = 0.0f;
+        hoverOverLight.enabled = false;
     }
 
     public void MouseDown()

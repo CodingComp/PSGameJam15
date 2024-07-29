@@ -9,8 +9,8 @@ public class CraftingLever : MonoBehaviour, IInteractable
     public Crafting crafting;
     private ResolutionManager rm;
     
-    private float maxRot = -25.0f;
-    private float minRot = -160.0f;
+    private float maxRot = 135.0f;
+    private float minRot = 0.0f;
 
     private Vector3 startMousePos;
     private bool canUseLever = true;
@@ -25,7 +25,7 @@ public class CraftingLever : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        startMousePos = rm.GetMousePosition() - new Vector3(0,maxRot,0);
+        startMousePos = rm.GetMousePosition();// - new Vector3(0,minRot,0);
     }
 
     public void MouseEnter()
@@ -40,12 +40,12 @@ public class CraftingLever : MonoBehaviour, IInteractable
 
     public void MouseDown()
     {
+        Vector3 movementDiff = startMousePos - rm.GetMousePosition();
+        
         if (!canUseLever) return;
-        
-        Vector3 movementDiff = rm.GetMousePosition() - startMousePos;
-        
+
         // Checks if lever is in down position
-        if (movementDiff.y <= minRot)
+        if (movementDiff.y >= maxRot)
         {
             crafting.Craft();
             canUseLever = false;
@@ -54,7 +54,7 @@ public class CraftingLever : MonoBehaviour, IInteractable
         }
         if (movementDiff.y > maxRot || movementDiff.y < minRot) return;
         
-        Quaternion rotation = Quaternion.Euler(movementDiff.y, 0, 0);
+        Quaternion rotation = Quaternion.Euler(movementDiff.y, 180.0f, 0);
         leverTransform.rotation = rotation;
     }
 

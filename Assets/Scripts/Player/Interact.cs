@@ -22,14 +22,15 @@ public class Interact : MonoBehaviour
     public LayerMask interactLayer;
     public LayerMask craftItemLayer;
     public ResolutionManager rm;
-
+    
     private Dictionary<GameObject, IInteractable> interactables;
     private GameObject hoveredInteractable;
 
     private IInteractable currentInteractable = null;
     
     private bool craftingMode = false;
-
+    
+    
     private void Awake()
     {
         interactables = new Dictionary<GameObject, IInteractable>();
