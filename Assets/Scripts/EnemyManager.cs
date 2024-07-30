@@ -65,6 +65,7 @@ public class EnemyManager : MonoBehaviour
                     rPos += _rm.mainCamera.transform.up * _rm.pixelSize / 2;
 
                     // Checks if pixel raycast hits enemy. If so check light value and update inLight accordingly.
+                    Debug.DrawRay(rPos, _rm.mainCamera.transform.forward);
                     if (Physics.Raycast(rPos, _rm.mainCamera.transform.forward, out var hitInfo, 100.0f,
                             enemyMask))
                     {

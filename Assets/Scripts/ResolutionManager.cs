@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 ///     Handles resolution values and resolution changes. Making sure everything works with the lower resolution

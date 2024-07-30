@@ -23,6 +23,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float timeBetweenAttacks;
     [SerializeField] private float sightRange, attackRange;
 
+    public Renderer renderer;
     private Player _player;
     private Material _mat;
     private bool _playerInSightRange, _playerInAttackRange, _walkPointSet, _alreadyAttacked;
@@ -31,12 +32,11 @@ public class Enemy : MonoBehaviour
     {
         _player = GameObject.Find("Player").GetComponent<Player>();
         agent = GetComponent<NavMeshAgent>();
-        _mat = GetComponent<Renderer>().material;
+        _mat =renderer.material;
     }
 
     private void Update()
     {
-
         _playerInSightRange = Physics.CheckSphere(transform.position, sightRange, playerLayer);
         _playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, playerLayer);
 
