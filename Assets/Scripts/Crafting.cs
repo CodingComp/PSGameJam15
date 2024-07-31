@@ -54,8 +54,8 @@ public class Crafting : MonoBehaviour, IInteractable
 
     [SerializeField] private float itemsDisplayTransitionTime = 0.5f;
     [SerializeField] private float lerpSpeed = 1.0f;
-    private readonly Quaternion _doorCloseRot = Quaternion.Euler(0, 180, 0);
-    private readonly Quaternion _doorOpenRot = Quaternion.Euler(0, 160 + 180, 0);
+    private readonly Quaternion _doorCloseRot = Quaternion.Euler(0, 0, 0);
+    private readonly Quaternion _doorOpenRot = Quaternion.Euler(0, 160, 0);
     private bool _canCraft = true;
 
     private ItemData _craftedItem;
@@ -313,7 +313,7 @@ public class Crafting : MonoBehaviour, IInteractable
         {
             // Lerps player items display to target position
             playerItemsDisplay.transform.position = Vector3.Lerp(playerItemsDisplay.transform.position, _displayItemsTargetPos, time);
-            doorTransform.rotation = Quaternion.Lerp(doorTransform.rotation, _doorOpenRot, time);
+            doorTransform.localRotation = Quaternion.Lerp(doorTransform.localRotation, _doorOpenRot, time);
             time += Time.deltaTime * lerpSpeed;
             yield return null;
         }
@@ -331,7 +331,7 @@ public class Crafting : MonoBehaviour, IInteractable
         {
             // Lerps player items display to target position
             playerItemsDisplay.transform.position = Vector3.Lerp(playerItemsDisplay.transform.position, _displayItemsTargetPos, time);
-            doorTransform.rotation = Quaternion.Lerp(doorTransform.rotation, _doorCloseRot, time);
+            doorTransform.localRotation = Quaternion.Lerp(doorTransform.localRotation, _doorCloseRot, time);
             time += Time.deltaTime * lerpSpeed;
             yield return null;
         }
@@ -356,7 +356,7 @@ public class Crafting : MonoBehaviour, IInteractable
         float time = 0.0f;
         while (time < itemsDisplayTransitionTime)
         {
-            doorTransform.rotation = Quaternion.Lerp(doorTransform.rotation, _doorCloseRot, time);
+            doorTransform.localRotation = Quaternion.Lerp(doorTransform.localRotation, _doorCloseRot, time);
             time += Time.deltaTime * lerpSpeed;
             yield return null;
         }
@@ -372,7 +372,7 @@ public class Crafting : MonoBehaviour, IInteractable
         time = 0.0f;
         while (time < itemsDisplayTransitionTime)
         {
-            doorTransform.rotation = Quaternion.Lerp(doorTransform.rotation, _doorOpenRot, time);
+            doorTransform.localRotation = Quaternion.Lerp(doorTransform.localRotation, _doorOpenRot, time);
             time += Time.deltaTime * lerpSpeed;
             yield return null;
         }

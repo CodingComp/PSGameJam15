@@ -16,6 +16,7 @@ public class DisplayedItem : MonoBehaviour, IInteractable
         EventManager.E_Item.itemCreated.Invoke(gameObject);
         _renderer = transform.GetChild(0).GetComponent<Renderer>();
         _baseMat = _renderer.material;
+        print("aaaa");
     }
 
     /*

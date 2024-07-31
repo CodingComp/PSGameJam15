@@ -83,6 +83,7 @@ public class Item : MonoBehaviour, IInteractable
     /// </summary>
     public void ItemAdded()
     {
+        print("a");
         EventManager.E_Item.itemDestroyed.Invoke(gameObject);
         lights = new List<Light>();
         Destroy(gameObject);

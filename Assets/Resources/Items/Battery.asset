@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a7000f90f3172949a365d45279125d2, type: 3}
+  m_Name: Battery
+  m_EditorClassIdentifier: 
+  itemName: Battery
+  icon: {fileID: 21300000, guid: 4be581bb801c583439d384e1fbef0c5f, type: 3}
+  mesh: {fileID: 4815609508827286363, guid: 8d02e81a6f8fe034c8d417e5781e57a1, type: 3}
+  maxStackSize: 1
+  canBeCrafted: 0
+  craftRecipe:
+    item1: {fileID: 0}
+    item2: {fileID: 0}
+    item3: {fileID: 0}

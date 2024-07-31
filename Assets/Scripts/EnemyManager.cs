@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -65,12 +66,11 @@ public class EnemyManager : MonoBehaviour
                     rPos += _rm.mainCamera.transform.up * _rm.pixelSize / 2;
 
                     // Checks if pixel raycast hits enemy. If so check light value and update inLight accordingly.
-                    Debug.DrawRay(rPos, _rm.mainCamera.transform.forward);
                     if (Physics.Raycast(rPos, _rm.mainCamera.transform.forward, out var hitInfo, 100.0f,
                             enemyMask))
                     {
                         if (0.2126 * cameraRender.GetPixel(j, i).r + 0.7152 * cameraRender.GetPixel(j, i).g +
-                            0.0722 * cameraRender.GetPixel(j, i).b > 0.01f) inLight = true; // Break if any pixel is in light?
+                            0.0722 * cameraRender.GetPixel(j, i).b > 0.01f) inLight = true;
                     }
                 }
             }
@@ -84,7 +84,7 @@ public class EnemyManager : MonoBehaviour
         _enemies.Remove(enemy);
         if (_visibleEnemies.Contains(enemy)) _visibleEnemies.Remove(enemy);
 
-        Destroy(enemy.gameObject);
+        StartCoroutine(RespawnEnemy(enemy));
     }
 
     public void EnemyVisible(Enemy enemy)
@@ -95,5 +95,19 @@ public class EnemyManager : MonoBehaviour
     public void EnemyLeftVisibility(Enemy enemy)
     {
         _visibleEnemies.Remove(enemy);
+    }
+
+    private IEnumerator RespawnEnemy(Enemy enemy)
+    {
+        enemy.waitForRespawn = true;
+        enemy.gameObject.SetActive(false);
+        enemy.inLight = false;
+        enemy.health = 100.0f;
+        
+        yield return new WaitForSeconds(60.0f);
+        
+        enemy.gameObject.SetActive(true);
+        enemy.transform.position = enemy.spawnPos;
+        enemy.waitForRespawn = false;
     }
 }

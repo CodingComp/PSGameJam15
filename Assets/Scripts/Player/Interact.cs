@@ -33,7 +33,9 @@ public class Interact : MonoBehaviour
         // Events
         EventManager.E_Item.itemCreated += item =>
         {
+            print(item.name + " " + _interactables.Count);
             _interactables.Add(item, item.GetComponent<IInteractable>());
+            print(item.name + " " + _interactables.Count);
         };
         EventManager.E_Item.itemDestroyed += item =>
         {
@@ -53,6 +55,7 @@ public class Interact : MonoBehaviour
         IEnumerable<IInteractable> interactableObjects = FindObjectsOfType<MonoBehaviour>().OfType<IInteractable>();
         foreach (IInteractable interactable in interactableObjects)
         {
+            print(((MonoBehaviour)interactable).gameObject.name);
             _interactables.Add(((MonoBehaviour)interactable).gameObject, interactable);
         }
     }

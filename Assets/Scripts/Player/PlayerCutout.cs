@@ -10,10 +10,11 @@ public class PlayerCutout : MonoBehaviour
 {
     [SerializeField] private Transform targetObject;
     [SerializeField] private LayerMask wallMask;
-
+    [SerializeField] private Transform rayStartTransform;
+    
     private Camera _cam;
     private Dictionary<GameObject, Material> _wallMaterials;
-
+    
     private void Awake()
     {
         _cam = GetComponent<Camera>();
@@ -32,8 +33,9 @@ public class PlayerCutout : MonoBehaviour
         Vector2 cutoutPos = _cam.WorldToViewportPoint(targetObject.position);
         cutoutPos.y /= Screen.width / Screen.height;
 
-        Vector3 offset = targetObject.position - transform.position;
-        RaycastHit [] hitObjects = Physics.RaycastAll(transform.position, offset, offset.magnitude, wallMask);
+        Vector3 offset = targetObject.position - rayStartTransform.position;
+        Debug.DrawRay(rayStartTransform.position, offset);
+        RaycastHit [] hitObjects = Physics.RaycastAll(rayStartTransform.position, offset, offset.magnitude, wallMask);
 
         foreach (KeyValuePair<GameObject, Material> wall in _wallMaterials)
         {
@@ -45,7 +47,7 @@ public class PlayerCutout : MonoBehaviour
         foreach (RaycastHit hit in hitObjects)
         {
             Material mat = _wallMaterials[hit.transform.gameObject];
-            mat.SetFloat("_CutoutSize", 0.2f);
+            mat.SetFloat("_CutoutSize", 0.35f);
         }
     }
 }

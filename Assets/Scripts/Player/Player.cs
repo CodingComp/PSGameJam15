@@ -32,6 +32,7 @@ public class Player : MonoBehaviour
     private Quaternion _targetRot;
     private float _verticalInput;
 
+    [SerializeField] private Animator playerAnimator;
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Confined;
@@ -60,11 +61,24 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isBusy) return;
-
+        if (isBusy)
+        {
+            playerAnimator.SetFloat("vX", 0.0f);
+            playerAnimator.SetFloat("vZ", 0.0f);
+            return;
+        }
+        
         _moveDir = orientation.forward * _verticalInput + orientation.right * _horizontalInput;
         _rb.AddForce(_moveDir.normalized * (moveSpeed * 10.0f), ForceMode.Force);
-    }
+        
+        Vector3 inputVector = (orientation.forward * Input.GetAxis("Vertical")) + (orientation.right * Input.GetAxis("Horizontal"));
+        Vector3 animationVector = playerModel.transform.InverseTransformDirection(inputVector);
+        float VelocityX = animationVector.x;
+        float VelocityZ = animationVector.z;
+        
+        playerAnimator.SetFloat("vX", VelocityX);
+        playerAnimator.SetFloat("vZ", VelocityZ);
+    } 
 
     private void RotateCamera(Quaternion rot)
     {

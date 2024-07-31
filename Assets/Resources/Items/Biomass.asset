@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a7000f90f3172949a365d45279125d2, type: 3}
+  m_Name: Biomass
+  m_EditorClassIdentifier: 
+  itemName: Biomass
+  icon: {fileID: 21300000, guid: bdb953cd6b09db54ca31b780ed01ef32, type: 3}
+  mesh: {fileID: 8448316428794685188, guid: da10c72fba63af7449865009b1743a9c, type: 3}
+  maxStackSize: 1
+  canBeCrafted: 0
+  craftRecipe:
+    item1: {fileID: 0}
+    item2: {fileID: 0}
+    item3: {fileID: 0}

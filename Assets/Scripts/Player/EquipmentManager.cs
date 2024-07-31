@@ -39,7 +39,7 @@ public class EquipmentManager : MonoBehaviour
             }
         }
 
-        if (flashlight.activeSelf)
+        /*if (flashlight.activeSelf)
         {
             _flashlightBattery -= batteryDrainRate * Time.deltaTime;
             if (_flashlightBattery <= 0.0f)
@@ -56,7 +56,7 @@ public class EquipmentManager : MonoBehaviour
                 _recharge = false;
                 _flashlightBattery = 100.0f;
             }
-        }
+        }*/
 
 
         // Flare

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a7000f90f3172949a365d45279125d2, type: 3}
+  m_Name: Cobalt
+  m_EditorClassIdentifier: 
+  itemName: Cobalt
+  icon: {fileID: 21300000, guid: b33812f7a4b4985479619867e0def003, type: 3}
+  mesh: {fileID: 4406321064190525063, guid: 1f7f10ad51eae26439d2a19072024427, type: 3}
+  maxStackSize: 1
+  canBeCrafted: 0
+  craftRecipe:
+    item1: {fileID: 0}
+    item2: {fileID: 0}
+    item3: {fileID: 0}

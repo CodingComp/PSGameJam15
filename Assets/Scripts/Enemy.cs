@@ -28,15 +28,21 @@ public class Enemy : MonoBehaviour
     private Material _mat;
     private bool _playerInSightRange, _playerInAttackRange, _walkPointSet, _alreadyAttacked;
 
+    public Vector3 spawnPos;
+    public bool waitForRespawn = false;
+    
     private void Awake()
     {
         _player = GameObject.Find("Player").GetComponent<Player>();
         agent = GetComponent<NavMeshAgent>();
         _mat =renderer.material;
+        spawnPos = transform.position;
     }
 
     private void Update()
     {
+        if (waitForRespawn) return;
+        
         _playerInSightRange = Physics.CheckSphere(transform.position, sightRange, playerLayer);
         _playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, playerLayer);
 

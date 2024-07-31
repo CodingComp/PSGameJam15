@@ -17,7 +17,7 @@ public class CraftingLever : MonoBehaviour, IInteractable
     private void Start()
     {
         _rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
-        _startRotation = leverTransform.rotation;
+        _startRotation = leverTransform.localRotation;
     }
 
     public void Interact()
@@ -51,8 +51,8 @@ public class CraftingLever : MonoBehaviour, IInteractable
         }
         if (movementDiff.y > MaxRot || movementDiff.y < MinRot) return;
 
-        Quaternion rotation = Quaternion.Euler(movementDiff.y, 180.0f, 0);
-        leverTransform.rotation = rotation;
+        Quaternion rotation = Quaternion.Euler(movementDiff.y, 0, 0);
+        leverTransform.localRotation = rotation;
     }
 
     public void MouseReleased()
@@ -69,7 +69,7 @@ public class CraftingLever : MonoBehaviour, IInteractable
         while (time < 0.25f)
         {
             // Lerps player items display to target position
-            leverTransform.rotation = Quaternion.Lerp(leverTransform.rotation, _startRotation, time);
+            leverTransform.localRotation = Quaternion.Lerp(leverTransform.localRotation, _startRotation, time);
             time += Time.deltaTime;
             yield return null;
         }
