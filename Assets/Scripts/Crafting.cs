@@ -159,7 +159,7 @@ public class Crafting : MonoBehaviour, IInteractable
     private void CreateDisplayItem(ItemData itemData, ItemLocations itemLocations, int locationIndex)
     {
         GameObject displayedItem = Instantiate(itemData.mesh, itemLocations.itemLocations[locationIndex]);
-        DisplayedItem dItem = displayedItem.AddComponent<DisplayedItem>();
+        DisplayedItem dItem = displayedItem.transform.GetChild(0).gameObject.AddComponent<DisplayedItem>();
         dItem.crafting = this;
         dItem.itemData = itemData;
         dItem.hoverMat = hoverMaterial;
@@ -191,7 +191,7 @@ public class Crafting : MonoBehaviour, IInteractable
             if (location.childCount == 0)
             {
                 GameObject displayedItem = Instantiate(craftingItemData.mesh, location);
-                InsertedCraftingItem ici = displayedItem.AddComponent<InsertedCraftingItem>();
+                InsertedCraftingItem ici = displayedItem.transform.GetChild(0).gameObject.AddComponent<InsertedCraftingItem>();
                 ici.Setup(this, player.inventory, craftingItemData, hoverMaterial);
                 break;
             }
@@ -254,7 +254,7 @@ public class Crafting : MonoBehaviour, IInteractable
         if (craftedItemLocation.childCount != 0)
         {
             player.inventory.items[_craftedItem]++;
-            EventManager.E_Item.itemDestroyed.Invoke(craftedItemLocation.GetChild(0).gameObject);
+            EventManager.E_Item.itemDestroyed.Invoke(craftedItemLocation.GetChild(0).GetChild(0).gameObject);
             Destroy(craftedItemLocation.GetChild(0).gameObject);
         }
 
@@ -366,7 +366,8 @@ public class Crafting : MonoBehaviour, IInteractable
         RemoveInsertedItems();
 
         GameObject displayedItem = Instantiate(_craftedItem.mesh, craftedItemLocation);
-        InsertedCraftingItem ici = displayedItem.AddComponent<InsertedCraftingItem>();
+        InsertedCraftingItem ici = displayedItem.transform.GetChild(0).gameObject.AddComponent<InsertedCraftingItem>();
+        // displayedItem.transform.GetChild(0).gameObject.AddComponent<InsertedCraftingItem>();
         ici.Setup(this, player.inventory, _craftedItem, hoverMaterial);
 
         time = 0.0f;

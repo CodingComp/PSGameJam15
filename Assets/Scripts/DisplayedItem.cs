@@ -14,9 +14,8 @@ public class DisplayedItem : MonoBehaviour, IInteractable
     {
         _rm = GameObject.Find("GameManager").GetComponent<ResolutionManager>();
         EventManager.E_Item.itemCreated.Invoke(gameObject);
-        _renderer = transform.GetChild(0).GetComponent<Renderer>();
+        _renderer = GetComponent<Renderer>();
         _baseMat = _renderer.material;
-        print("aaaa");
     }
 
     /*
@@ -25,7 +24,7 @@ public class DisplayedItem : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        _zDist = _rm.mainCamera.WorldToScreenPoint(transform.position).z;
+        _zDist = _rm.mainCamera.WorldToScreenPoint(transform.parent.position).z;
     }
 
     public void MouseEnter()
@@ -40,7 +39,7 @@ public class DisplayedItem : MonoBehaviour, IInteractable
 
     public void MouseDown()
     {
-        transform.position = _rm.mainCamera.ScreenToWorldPoint(_rm.GetMousePosition(_zDist) + new Vector3(0, -20, 0));
+        transform.parent.position = _rm.mainCamera.ScreenToWorldPoint(_rm.GetMousePosition(_zDist) + new Vector3(0, -20, 0));
     }
 
     public void MouseReleased()
@@ -50,10 +49,10 @@ public class DisplayedItem : MonoBehaviour, IInteractable
             crafting.AddCraftingItem(itemData))
         {
             EventManager.E_Item.itemDestroyed.Invoke(gameObject);
-            Destroy(gameObject);
+            Destroy(transform.parent.gameObject);
             return;
         }
 
-        transform.localPosition = Vector3.zero;
+        transform.parent.localPosition = Vector3.zero;
     }
 }

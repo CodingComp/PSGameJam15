@@ -8,7 +8,7 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private GameObject inventoryUI;
     [SerializeField] private GameObject inventoryObject;
     public GameObject droppedBackpackPrefab;
-
+    
     [Header("Cameras")] 
     public CinemachineVirtualCamera playerCamera;
     public CinemachineVirtualCamera inventoryCamera;

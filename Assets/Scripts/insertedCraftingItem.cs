@@ -15,7 +15,7 @@ public class InsertedCraftingItem : MonoBehaviour, IInteractable
         _crafting.craftingItems.Remove(_itemData);
         EventManager.E_Item.itemDestroyed.Invoke(gameObject);
         EventManager.E_Crafting.updateDisplayedItems.Invoke();
-        Destroy(gameObject);
+        Destroy(transform.parent.gameObject);
     }
 
     public void MouseEnter()
@@ -25,7 +25,7 @@ public class InsertedCraftingItem : MonoBehaviour, IInteractable
 
     public void MouseExit()
     {
-        _renderer.materials = new [] {_baseMat};
+        if (_renderer) _renderer.materials = new [] {_baseMat};
     }
     public void MouseDown() { }
     public void MouseReleased() { }
@@ -37,7 +37,7 @@ public class InsertedCraftingItem : MonoBehaviour, IInteractable
         _itemData = itemData;
         _hoverMat = hoverMat;
         EventManager.E_Item.itemCreated.Invoke(gameObject);
-        _renderer = transform.GetChild(0).GetComponent<MeshRenderer>();
+        _renderer = GetComponent<MeshRenderer>();
         _baseMat = _renderer.material;
     }
 }
